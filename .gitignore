@@ -1,0 +1,29 @@
+# Dataset files
+*.csv
+
+# Python virtual environments
+.venv/
+venv/
+env/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS
+.DS_Store
+
+# Training outputs & saved model weights
+results/
+ML/saved_summary_model/
+saved_summary_model/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
