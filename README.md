@@ -1,3 +1,12 @@
+---
+title: Text Summarizer
+emoji: 🧠
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # 🧠 Text Summarizer — Fine-tuned T5 on SAMSum
 
 A production-ready **dialogue summarization system** built with a fine-tuned **T5-small** transformer model, served through a **FastAPI** backend and a polished dark-themed web UI.
