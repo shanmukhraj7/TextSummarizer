@@ -15,9 +15,12 @@ Text-Summarizer/
 │   │   └── samsum-validation.csv
 │   │
 │   ├── saved_summary_model/         ← Created after training
+│   │   ├── added_tokens.json
 │   │   ├── config.json
+│   │   ├── generation_config.json
 │   │   ├── model.safetensors
-│   │   ├── tokenizer.json
+│   │   ├── special_tokens_map.json
+│   │   ├── spiece.model
 │   │   └── tokenizer_config.json
 │   │
 │   ├── preprocess.py                ← Text cleaning utilities
@@ -42,8 +45,8 @@ Text-Summarizer/
 ### Step 1 — Clone the repo
 
 ```bash
-git clone https://github.com/your-username/Text-Summarizer.git
-cd Text-Summarizer
+git clone https://github.com/shanmukhraj7/TextSummarizer.git
+cd TextSummarizer
 ```
 
 ### Step 2 — Run setup (only once)
@@ -193,5 +196,5 @@ MIT — free to use, modify, and distribute.
 
 ## 👤 Author
 
-**Your Name** — ML Engineer  
+**Avunoori Shanmukha Raj** — ML Engineer  
 [GitHub](https://github.com/shanmukhraj7) · [LinkedIn](https://www.linkedin.com/in/shanmukha7/)
