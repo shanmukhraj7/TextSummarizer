@@ -110,8 +110,7 @@ def run_summarize(dialogue: str) -> str:
 
     inputs = tokenizer(
         input_text,
-        padding="max_length",
-        max_length=512,
+        max_length=1024,  
         truncation=True,
         return_tensors="pt",
     ).to(device)
@@ -120,8 +119,10 @@ def run_summarize(dialogue: str) -> str:
         output_ids = model.generate(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
-            max_length=150,
+            max_length=200,        
+            min_length=30,         
             num_beams=4,
+            length_penalty=2.0,    
             early_stopping=True,
             no_repeat_ngram_size=3,
         )
