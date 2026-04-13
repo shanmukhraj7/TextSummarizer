@@ -47,23 +47,27 @@ logger.info(f"Running on device: {device}")
 #  Load model & tokenizer
 # ─────────────────────────────────────────────
 MODEL_PATH = "ML/saved_summary_model"
+import os
 
 try:
     from transformers import T5ForConditionalGeneration, T5Tokenizer
 
-    model     = T5ForConditionalGeneration.from_pretrained(MODEL_PATH)
-    tokenizer = T5Tokenizer.from_pretrained(MODEL_PATH)
+    if os.path.exists(MODEL_PATH):
+        logger.info(f"Loading local finetuned model from: {MODEL_PATH}")
+        model     = T5ForConditionalGeneration.from_pretrained(MODEL_PATH)
+        tokenizer = T5Tokenizer.from_pretrained(MODEL_PATH)
+    else:
+        logger.info("Local model not found. Downloading base 't5-small' dynamically...")
+        model     = T5ForConditionalGeneration.from_pretrained("t5-small")
+        tokenizer = T5Tokenizer.from_pretrained("t5-small")
+
     model.to(device)
     model.eval()
     logger.info("Model loaded successfully.")
 
 except Exception as exc:
     logger.error(f"Failed to load model: {exc}")
-    raise RuntimeError(
-        f"\n\n  Model not found at '{MODEL_PATH}'.\n"
-        "  Please train the model first by running the notebook:\n"
-        "  ML/text_summarizer.ipynb\n"
-    ) from exc
+    raise RuntimeError(f"Could not load the model. {exc}") from exc
 
 
 # ─────────────────────────────────────────────
