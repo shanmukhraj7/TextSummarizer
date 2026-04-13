@@ -27,7 +27,7 @@ for candidate in "${CANDIDATES[@]}"; do
 done
 
 if [ -z "$ARM_PYTHON" ]; then
-  echo "❌  No ARM64 (Apple Silicon) Python found."
+  echo "  No ARM64 (Apple Silicon) Python found."
   echo ""
   echo "  Install Homebrew and Python 3.11 first:"
   echo ""
@@ -39,19 +39,19 @@ if [ -z "$ARM_PYTHON" ]; then
   exit 1
 fi
 
-echo "✅  Found Python  : $ARM_PYTHON"
+echo "  Found Python  : $ARM_PYTHON"
 echo "    Architecture  : $($ARM_PYTHON -c 'import platform; print(platform.machine())')"
 echo "    Version       : $($ARM_PYTHON --version)"
 echo ""
 
 # ── Remove any old .venv ─────────────────
 if [ -d ".venv" ]; then
-  echo "🗑   Removing old .venv ..."
+  echo "   Removing old .venv ..."
   rm -rf .venv
 fi
 
 # ── Create fresh venv ────────────────────
-echo "📦  Creating virtual environment ..."
+echo "  Creating virtual environment ..."
 "$ARM_PYTHON" -m venv .venv
 source .venv/bin/activate
 
@@ -61,25 +61,25 @@ echo "    venv arch     : $VENV_ARCH"
 
 if [ "$VENV_ARCH" != "arm64" ]; then
   echo ""
-  echo "❌  venv is still $VENV_ARCH — something is wrong."
+  echo "  venv is still $VENV_ARCH — something is wrong."
   echo "    Make sure Homebrew is installed at /opt/homebrew (Apple Silicon path)."
   exit 1
 fi
 echo ""
 
 # ── Install packages ─────────────────────
-echo "⬇️   Upgrading pip ..."
+echo "   Upgrading pip ..."
 pip install --upgrade pip --quiet
 
-echo "⬇️   Installing PyTorch ..."
+echo "   Installing PyTorch ..."
 pip install torch torchvision torchaudio --quiet
 
-echo "⬇️   Installing project dependencies ..."
+echo "   Installing project dependencies ..."
 pip install -r requirements.txt --quiet
 
 echo ""
 echo "============================================"
-echo "  ✅  Setup complete!"
+echo "    Setup complete!"
 echo ""
 echo "  Next steps:"
 echo ""
