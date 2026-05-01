@@ -7,9 +7,9 @@ sdk: docker
 pinned: false
 ---
 
-# 🧠 Text Summarizer — Fine-tuned T5 on SAMSum
+# 🧠 Text Summarizer — Fine-tuned BART on SAMSum
 
-A production-ready **dialogue summarization system** built with a fine-tuned **T5-small** transformer model, served through a **FastAPI** backend and a polished dark-themed web UI.
+A production-ready **dialogue summarization system** built with a fine-tuned **BART-base** model, served through a **FastAPI** backend and a polished web UI.
 
 ---
 
@@ -24,16 +24,16 @@ Text-Summarizer/
 │   │   └── samsum-validation.csv
 │   │
 │   ├── saved_summary_model/         ← Created after training
-│   │   ├── added_tokens.json
 │   │   ├── config.json
 │   │   ├── generation_config.json
 │   │   ├── model.safetensors
 │   │   ├── special_tokens_map.json
-│   │   ├── spiece.model
+│   │   ├── merges.txt
+│   │   ├── vocab.json
 │   │   └── tokenizer_config.json
 │   │
 │   ├── preprocess.py                ← Text cleaning utilities
-│   ├── tokenizing.py                ← T5 tokenization with task prefix
+│   ├── tokenizing.py                ← Tokenization (512 max length)
 │   └── text_summarizer.ipynb        ← Full training notebook
 │
 ├── templates/
@@ -93,8 +93,7 @@ Open and run all cells in:
 ML/text_summarizer.ipynb
 ```
 
-This trains T5-small for 6 epochs and saves the model to `ML/saved_summary_model/`.
-Training takes ~50 minutes on Apple Silicon MPS.
+This fine-tunes **BART-base** and saves the model to `ML/saved_summary_model/`.
 
 ### Step 5 — Start the server
 
@@ -110,7 +109,7 @@ Open **http://localhost:8000** in your browser.
 
 | Layer | Technology |
 |---|---|
-| Model | T5-small (Google) via HuggingFace Transformers |
+| Model | `facebook/bart-base` via HuggingFace Transformers |
 | Fine-tuning | HuggingFace `Trainer` API |
 | Dataset | SAMSum (messenger-style dialogues + summaries) |
 | Backend | FastAPI + Uvicorn |
@@ -134,9 +133,9 @@ Open **http://localhost:8000** in your browser.
 **Response:**
 ```json
 {
-  "summary": "alice and bob discuss last night's game and the amazing last-minute goal.",
+  "summary": "Alice and Bob discuss last night's game and the amazing last-minute goal.",
   "input_word_count": 28,
-  "summary_word_count": 15
+  "summary_word_count": 13
 }
 ```
 
@@ -156,28 +155,14 @@ Serves the web UI.
 
 | Parameter | Value |
 |---|---|
-| Base model | `t5-small` |
+| Base model | `facebook/bart-base` |
 | Dataset | SAMSum |
 | Train samples | 4,000 (randomly sampled from 14,732) |
 | Validation samples | 500 (randomly sampled from 818) |
-| Epochs | 6 |
-| Batch size | 8 |
+| Epochs | 4 |
+| Batch size | 1 (with 4 gradient accumulation steps) |
 | Max input tokens | 512 |
-| Max output tokens | 128 |
-| Weight decay | 0.01 |
-| Warmup steps | 500 |
-| Inference | Beam search, 4 beams, no-repeat-ngram=3 |
-
-### Loss Curve
-
-| Epoch | Train Loss | Val Loss |
-|---|---|---|
-| 1 | 3.70 | 0.44 |
-| 2 | 0.46 | 0.42 |
-| 3 | 0.44 | 0.41 |
-| 4 | 0.42 | 0.41 |
-| 5 | 0.42 | 0.41 |
-| 6 | **0.41** | **0.41** |
+| Inference | Beam search, 4 beams, no-repeat-ngram=3, length penalty=2.0 |
 
 ---
 
@@ -190,7 +175,6 @@ Always use `python3 -m uvicorn` (not just `uvicorn`) on Apple Silicon. The plain
 ## 🔮 Possible Improvements
 
 - Evaluate with ROUGE score metrics
-- Upgrade to `t5-base` or `facebook/bart-large-cnn`
 - Add streaming output via Server-Sent Events
 - Add Docker support for deployment
 - Deploy to Hugging Face Spaces
