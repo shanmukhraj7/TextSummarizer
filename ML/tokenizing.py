@@ -1,15 +1,14 @@
-from transformers import T5Tokenizer
+from transformers import AutoTokenizer
 
-tokenizer = T5Tokenizer.from_pretrained("t5-small")
+tokenizer = AutoTokenizer.from_pretrained("facebook/bart-base")
 
-MAX_INPUT_LENGTH  = 512
+MAX_INPUT_LENGTH  = 512    # Reduced from 1024 to speed up training
 MAX_TARGET_LENGTH = 128
 
 def tokenizing_raw_data(row) -> dict:
-    input_text = "summarize: " + row["dialogue"]
-
+    # ⚠️ No "summarize: " prefix — BART doesn't use task prefixes
     inputs = tokenizer(
-        input_text,
+        row["dialogue"],
         padding="max_length",
         max_length=MAX_INPUT_LENGTH,
         truncation=True,

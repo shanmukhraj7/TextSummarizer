@@ -2,9 +2,11 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, field_validator
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 import re
 import logging
+import os
 
 # ─────────────────────────────────────────────
 #  Logging
@@ -21,7 +23,7 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────
 app = FastAPI(
     title="Text Summarizer",
-    description="Dialogue summarization using a fine-tuned T5-small model on SAMSum.",
+    description="Dialogue summarization using a fine-tuned BART-base model on SAMSum.",
     version="1.0.0",
 )
 
@@ -46,20 +48,17 @@ logger.info(f"Running on device: {device}")
 # ─────────────────────────────────────────────
 #  Load model & tokenizer
 # ─────────────────────────────────────────────
-MODEL_PATH = "ML/saved_summary_model"
-import os
+MODEL_PATH    = "ML/saved_summary_model"
+FALLBACK_MODEL = "facebook/bart-base"
 
 try:
-    from transformers import T5ForConditionalGeneration, T5Tokenizer
-
     if os.path.exists(MODEL_PATH):
-        logger.info(f"Loading local finetuned model from: {MODEL_PATH}")
-        model     = T5ForConditionalGeneration.from_pretrained(MODEL_PATH)
-        tokenizer = T5Tokenizer.from_pretrained(MODEL_PATH)
+        logger.info(f"Loading local fine-tuned model from: {MODEL_PATH}")
     else:
-        logger.info("Local model not found. Downloading base 't5-small' dynamically...")
-        model     = T5ForConditionalGeneration.from_pretrained("t5-small")
-        tokenizer = T5Tokenizer.from_pretrained("t5-small")
+        logger.info(f"Local model not found. Downloading '{FALLBACK_MODEL}' dynamically...")
+
+    model     = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH if os.path.exists(MODEL_PATH) else FALLBACK_MODEL)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH if os.path.exists(MODEL_PATH) else FALLBACK_MODEL)
 
     model.to(device)
     model.eval()
@@ -100,18 +99,17 @@ def clean_text(text: str) -> str:
     text = re.sub(r"\r\n|\r|\n", " ", text)
     text = re.sub(r"\s+", " ", text)
     text = re.sub(r"<.*?>", " ", text)
-    return text.strip().lower()
+    return text.strip()          # ← no .lower() — BART is case-sensitive
 
 
 def run_summarize(dialogue: str) -> str:
     """Tokenize → generate → decode."""
-    cleaned    = clean_text(dialogue)
-    input_text = "summarize: " + cleaned          # T5 task prefix
+    cleaned = clean_text(dialogue)   # ← no "summarize: " prefix for BART
 
     inputs = tokenizer(
-        input_text,
+        cleaned,
         padding="max_length",
-        max_length=512,
+        max_length=512,              # ← Reduced to 512 for faster processing
         truncation=True,
         return_tensors="pt",
     ).to(device)
@@ -124,6 +122,7 @@ def run_summarize(dialogue: str) -> str:
             num_beams=4,
             early_stopping=True,
             no_repeat_ngram_size=3,
+            length_penalty=2.0,      # ← helps BART produce fuller summaries
         )
 
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
