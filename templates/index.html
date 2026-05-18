@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Text Summarizer</title>
+  <title>Medical Text Summarizer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
@@ -427,7 +427,7 @@
         <span class="badge-dot"></span>
         T5-Small · Fine-tuned on SAMSum
       </div>
-      <h1>Dialogue<br /><em>Summarizer</em></h1>
+      <h1>Medical Text<br /><em>Summarizer</em></h1>
       <p class="subtitle">
         Paste any conversation or article and get an accurate, concise summary — powered by a fine-tuned T5 transformer.
       </p>
@@ -442,11 +442,11 @@
     <!-- ── Input card ── -->
     <div class="card">
       <div class="card-header">
-        <span class="card-label">Input Dialogue</span>
+        <span class="card-label">Input Text</span>
         <span class="char-count" id="char-count">0 / 2000</span>
       </div>
       <textarea
-        id="dialogue-input"
+        id="text-input"
         placeholder="Paste a conversation, news report, or any multi-sentence text here…"
         maxlength="2000"
         spellcheck="false"
@@ -496,7 +496,7 @@
   </div><!-- /wrapper -->
 
   <script>
-    const textarea   = document.getElementById('dialogue-input');
+    const textarea   = document.getElementById('text-input');
     const charCount  = document.getElementById('char-count');
     const submitBtn  = document.getElementById('submit-btn');
     const clearBtn   = document.getElementById('clear-btn');
@@ -531,13 +531,13 @@
 
     /* ── Submit ── */
     submitBtn.addEventListener('click', async () => {
-      const dialogue = textarea.value.trim();
+      const text = textarea.value.trim();
 
-      if (!dialogue) {
+      if (!text) {
         showError('Please enter some text first.');
         return;
       }
-      if (dialogue.length < 10) {
+      if (text.length < 10) {
         showError('Text is too short to summarize.');
         return;
       }
@@ -548,7 +548,7 @@
         const res = await fetch('/summarize', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ dialogue }),
+          body: JSON.stringify({ text }),
         });
 
         const data = await res.json();
