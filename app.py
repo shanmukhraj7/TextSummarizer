@@ -118,10 +118,9 @@ def run_summarize(dialogue: str) -> str:
         output_ids = model.generate(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
-            max_length=200,        
-            min_length=30,         
+            max_length=200,
+            min_length=30,
             num_beams=4,
-            length_penalty=2.0,    
             early_stopping=True,
             no_repeat_ngram_size=3,
             length_penalty=2.0,      # ← helps BART produce fuller summaries
