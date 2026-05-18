@@ -73,15 +73,15 @@ except Exception as exc:
 #  Schemas
 # ─────────────────────────────────────────────
 class DialogueInput(BaseModel):
-    dialogue: str
+    text: str
 
-    @field_validator("dialogue")
+    @field_validator("text")
     @classmethod
     def must_have_content(cls, v: str) -> str:
         if not v or not v.strip():
-            raise ValueError("Dialogue must not be empty.")
+            raise ValueError("Text must not be empty.")
         if len(v.strip()) < 10:
-            raise ValueError("Dialogue is too short to summarize.")
+            raise ValueError("Text is too short to summarize.")
         return v
 
 
@@ -139,10 +139,10 @@ async def home(request: Request):
 @app.post("/summarize", response_model=SummaryOutput)
 async def summarize(payload: DialogueInput):
     try:
-        result = run_summarize(payload.dialogue)
+        result = run_summarize(payload.text)
         return SummaryOutput(
             summary=result,
-            input_word_count=len(payload.dialogue.split()),
+            input_word_count=len(payload.text.split()),
             summary_word_count=len(result.split()),
         )
     except Exception as exc:

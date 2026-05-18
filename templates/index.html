@@ -425,17 +425,14 @@
     <header>
       <div class="badge">
         <span class="badge-dot"></span>
-        T5-Small · Fine-tuned on SAMSum
+        BART-base · Fine-tuned on SAMSum
       </div>
       <h1>Medical Text<br /><em>Summarizer</em></h1>
       <p class="subtitle">
-        Paste any conversation or article and get an accurate, concise summary — powered by a fine-tuned T5 transformer.
+        Paste clinical notes, patient reports, or medical literature and get a concise, accurate summary — powered by a fine-tuned BART transformer.
       </p>
       <div class="stats">
-        <div class="stat-pill"><span>🗂️</span> 14,732 training samples</div>
-        <div class="stat-pill"><span>⚡</span> Beam search · 4 beams</div>
-        <div class="stat-pill"><span>🔬</span> 6 training epochs</div>
-        <div class="stat-pill"><span>🍎</span> MPS / CUDA / CPU</div>
+        <div class="stat-pill"><span></span> Clinical &amp; medical text</div>
       </div>
     </header>
 
@@ -447,7 +444,7 @@
       </div>
       <textarea
         id="text-input"
-        placeholder="Paste a conversation, news report, or any multi-sentence text here…"
+        placeholder="Paste clinical notes, discharge summaries, medical reports, or any health-related text here…"
         maxlength="2000"
         spellcheck="false"
       ></textarea>
@@ -490,7 +487,7 @@
 
     <!-- ── Footer ── -->
     <footer class="page-footer">
-      Built with <strong>FastAPI</strong> · <strong>HuggingFace Transformers</strong> · <strong>T5-Small</strong>
+      Built with <strong>FastAPI</strong> · <strong>HuggingFace Transformers</strong> · <strong>BART-base</strong>
     </footer>
 
   </div><!-- /wrapper -->
